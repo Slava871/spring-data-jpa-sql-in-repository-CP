@@ -7,14 +7,7 @@ import lombok.NoArgsConstructor;
 import org.client.entity.Contacts.Email;
 import org.client.entity.Contacts.PhoneNumber;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Collection;
 
 @Data
@@ -24,18 +17,22 @@ import java.util.Collection;
 @NoArgsConstructor
 @Builder
 
-public class ContactMedium {
+public class ContactMedium {  //усредненный контакт?
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String uuid;
+    private String uuid;  // на один ай ди может ссылаться  и phone_number, и email
 
+    //Двусторонний OneToOne
     @OneToOne(mappedBy = "contacts", cascade = CascadeType.ALL)
     private Individual individual;
 
-    @OneToMany(mappedBy = "contactMedium")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY) // один ContactMedium.ContactMedium может "иметь" много имейлов
+    @JoinColumn(name = "contactMediumId")
     private Collection<Email> emails;
-    @OneToMany(mappedBy = "contactMedium")
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY) // один ContactMedium.ContactMedium может "иметь" много тлф-номеров
+    @JoinColumn(name = "contactMediumId")
     private Collection<PhoneNumber> phoneNumbers;
 
 }

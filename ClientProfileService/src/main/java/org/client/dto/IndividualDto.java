@@ -4,18 +4,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import org.client.entity.ContactMedium;
 import org.intellij.lang.annotations.Pattern;
-
-
+import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 
 @Schema(description = "Модель, описывающая пользоватяле в ЛК банка")
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Component
 public class IndividualDto {
 
     public static final String UUID_PATTERN = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
@@ -43,6 +46,13 @@ public class IndividualDto {
     private String countryOfBirth;
 
     private Date birthDate;
+
+    private String documentsUuid;
+
+    private UUID rfPassportUuid;
+
+    private String contactsUuid;
+
 
     @Hidden
     @JsonProperty(Fields.ADDRESS)

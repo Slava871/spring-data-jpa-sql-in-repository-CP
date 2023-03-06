@@ -20,10 +20,6 @@ public class Email {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String uuid;
 
-    @ManyToOne (optional=false, cascade=CascadeType.ALL)
-    @JoinColumn (name="emails")
-    private ContactMedium contactMedium;
-
     private String value;
 
 }

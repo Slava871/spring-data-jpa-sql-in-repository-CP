@@ -26,6 +26,8 @@ public class Documents {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String uuid;
 
+    private String value;
+
     @OneToOne(mappedBy = "documents", cascade = CascadeType.ALL)
     private Individual individual;
 

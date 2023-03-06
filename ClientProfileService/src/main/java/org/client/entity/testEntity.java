@@ -1,12 +1,11 @@
-package org.client.entity.Contacts;
-
+package org.client.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.client.entity.ContactMedium;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @Entity
@@ -14,10 +13,13 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PhoneNumber {
+public class testEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String uuid;
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-    private String value;
+    String name;
+
+
 }

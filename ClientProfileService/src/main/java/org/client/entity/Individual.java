@@ -20,11 +20,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class Individual {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private String uuid;
 
     private String icp;
@@ -37,16 +36,22 @@ public class Individual {
     private String countryOfBirth;
     private Date birthDate;
 
+
+
+
+
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "documents")
+    @JoinColumn(name = "documentID")
     private Documents documents;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "rfPassport")
     private RFPassport rfPassport;
 
+    //Двусторонний OneToOne
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "contacts")
+    @JoinColumn(name = "contactID")
     private ContactMedium contacts;
+
 
 }
