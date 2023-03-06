@@ -44,7 +44,6 @@ public class IndividualServiceImpl implements IndividualService {
                           Date birthDate, String countryOfBirth, String fullName, String gender,
                           String name, String patronymic, String placeOfBirth, String surname) {
 
-
         individualRepo.createUser(UUID.randomUUID().toString(), birthDate, countryOfBirth, fullName, gender, icp, name, patronymic,
                 placeOfBirth, surname, contactsUuid, documentsUuid, rfPassportUuid);
     }
@@ -59,6 +58,7 @@ public class IndividualServiceImpl implements IndividualService {
 
     @Override
     public List<Individual> getAll(){
+
        return individualRepo.findAll();
     }
 

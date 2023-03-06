@@ -51,6 +51,7 @@ public interface IndividualRepo extends JpaRepository<Individual, String>{
             nativeQuery = true)
     void testMethod(@Param("date") Date date, @Param("rfPassp") UUID rfPassp);
 
+    //джоин из трех таблиц через jpql
     @Query("from Individual as indiv join fetch indiv.contacts as cont join fetch cont.phoneNumbers as phnum  where phnum.value = :number")
     Individual findByPhNum(@Param("number") String number);
 
