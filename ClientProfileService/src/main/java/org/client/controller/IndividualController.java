@@ -4,17 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.client.dto.IndividualDto;
-
 import org.client.entity.Individual;
-
-import org.client.repo.IndividualRepo;
 import org.client.service.IndividualService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -23,10 +17,6 @@ import java.util.List;
 public class IndividualController {
 
     private final IndividualService individualService;
-
-    @Autowired
-    private IndividualRepo individualRepo;
-
 
     public IndividualController(IndividualService individualService) {
         this.individualService = individualService;
@@ -37,9 +27,9 @@ public class IndividualController {
     public List<Individual> getAll() {
         List<Individual> list = individualService.getAll();
         System.out.println(list.get(0).getIcp() + " user1 (icp) @@@");
-        System.out.println(list.get(1).getIcp() + " user2");
-        System.out.println(list.get(2).getIcp() + " user3");
-        return null;
+        System.out.println(list.get(1).getIcp() + " user2 (icp) @@@");
+        System.out.println(list.get(2).getIcp() + " user3 (icp) @@@");
+        return null; //не понимаю, как передать лист пользователей в json, просто вывел их icp в консоль
     }
 
     @GetMapping("/get/{icp}")
@@ -61,8 +51,20 @@ public class IndividualController {
     @Operation(summary = "Информация о клиенте по номеру телефона")
     public ResponseEntity<IndividualDto> getByPhonenumber(@Parameter(description = "телефон клиента") String Value,
                                                   @PathVariable(value="value") String value) {
-        System.out.println(value + "  телефон из постмана");
         return new ResponseEntity<>(individualService.getClientByPhoneNum(value), HttpStatus.OK);
     }
+
+    @PutMapping("/edit")
+    public void editIndividual(@RequestBody IndividualDto dto) {
+        individualService.editClient(dto.getIcp(), dto.getBirthDate(), dto.getCountryOfBirth(),
+                dto.getFullName(), dto.getGender(), dto.getName(), dto.getPatronymic(),
+                dto.getPlaceOfBirth(), dto.getSurname());
+    }
+
+    @PostMapping("/delete/{icp}")  // post запрос с пустым телом
+    public void editIndividual(@PathVariable(value="icp") String icp) {
+        individualService.deleteIndivid(icp);
+    }
+
 
 }

@@ -21,5 +21,10 @@ public interface IndividualService {
 
     List<Individual> getAll();
 
+    void editClient(String icp, Date birthdate, String countryOfbirth, String fullName, String gender,
+                   String name, String patronymic, String placeOfBirth, String surname);
+
+    void deleteIndivid(String icp);
+
 
 }

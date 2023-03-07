@@ -1,5 +1,7 @@
 package org.client.repo;
 
+import org.client.entity.ContactMedium;
+import org.client.entity.Documents;
 import org.client.entity.Individual;
 import org.client.entity.RFPassport;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,13 +19,12 @@ import java.util.UUID;
 
 @Repository
 public interface IndividualRepo extends JpaRepository<Individual, String>{
-    Optional<Individual> findByIcp(String icp);
 
-    // без аннотаций @Transactional  и @Modifying не будут вноситься изменения в БД!
-    // Без них можно только читать из БД
+    Optional<Individual> findIndividualByIcp(String icp); //находит только имя, фио, uuid. Остальные поля не находит...
+
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query( // СОЗДАНИЕ НОВОГО ПОЛЬЗОВАТЕЛЯ
+    @Query( // СОЗДАНИЕ НОВОГО ПОЛЬЗОВАТЕЛЯ, используем sql-запрос с параметрами
             value = "insert into public.individual values " +
                     "(:uuid, :birthDate, :countryOfBirth, :fullName, :gender, :icp, :name, :patronymic, " +
                     ":placeOfBirth, :surname, :contactsUuid, :documentsuuid, :rfPassportUuid)",
@@ -33,26 +34,39 @@ public interface IndividualRepo extends JpaRepository<Individual, String>{
                     @Param("patronymic") String patronymic, @Param("placeOfBirth") String placeOfBirth, @Param("surname") String surname,
                     @Param("contactsUuid") String contactsUuid, @Param("documentsuuid") String documentsuuid, @Param("rfPassportUuid") UUID rfPassportUuid);
 
-    @Query( //тестовый запрос
-            value = "select surname, name, :param1, country_of_birth from public.individual" +
-                    " where uuid = :param2",
-            nativeQuery = true) //
-    List<String> selectFromTable(@Param("param1") String icp, @Param("param2") String uuid);//17659396-f43a-444b-a94d-570f2ef5a166
-    // динамическим параметром (по кр. мере в именованном запросе) можно заменить часть запроса, которой соответсвует переменная сущности entity в коде
-
-    @Transactional
-    @Modifying(clearAutomatically = true)
-    @Query( //тестовый запрос
-            value = "insert into public.individual values " +
-                    "('30659359-f43a-444b-a94d-570f2ef5a166', :date, 'россия'," +
-                    " 'qwer', 'meil', '2345', 'toster', 'tostorovich', 'pskov', " +
-                    "'pletov', '6a659378-f43a-444b-a94d-570f2ef5a166', '6a659315-f43a-444b-a94d-570f2ef5a166'," +
-                    ":rfPassp)",
-            nativeQuery = true)
-    void testMethod(@Param("date") Date date, @Param("rfPassp") UUID rfPassp);
-
-    //джоин из трех таблиц через jpql
+    //  ищем пользователя по номеру телефона  (джоин из трех таблиц через jpql)
     @Query("from Individual as indiv join fetch indiv.contacts as cont join fetch cont.phoneNumbers as phnum  where phnum.value = :number")
     Individual findByPhNum(@Param("number") String number);
+
+    //  ищем все поля пользователя по icp
+    @Query(value = "SELECT * FROM public.individual where icp = :icp", nativeQuery = true)
+    Individual findAllFieldsByIcp(@Param("icp") String icp);
+
+    //  ищем uuid contact_medium юзера по icp юзера
+    @Query("from ContactMedium as cont join fetch cont.individual as indiv where indiv.icp = :icp")
+    ContactMedium findContactByIndivIcp(@Param("icp") String icp);
+
+    //  ищем uuid passport юзера по icp юзера
+    @Query("from RFPassport as passp join fetch passp.individual as indiv where indiv.icp = :icp")
+    RFPassport findPassportUuidByIndividIcp(@Param("icp") String icp);
+
+    //  ищем uuid document юзера по icp юзера
+    @Query("from Documents as doc join fetch doc.individual as indiv where indiv.icp = :icp")
+    Documents findDocumentUuidByIndividIcp(@Param("icp") String icp);
+
+    //  пересохраняем поля: контакты, документы, паспорт в табл. индивидуал
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update public.individual set contactid = :contactUuid, documentid = :documentUuid, rf_passport = :passpId where uuid = :individUuid",
+            nativeQuery = true)
+    void rewriteContactDocPassp(@Param("contactUuid") String contactUuid, @Param("documentUuid") String documentUuid,
+                                      @Param("passpId") UUID passpId, @Param("individUuid") String individUuid);
+
+    //  test method
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update public.individual set name = ? where uuid = ?",
+            nativeQuery = true)
+    void testMeth(String name, String uuid);
 
 }
